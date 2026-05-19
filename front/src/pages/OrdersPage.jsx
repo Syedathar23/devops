@@ -11,8 +11,31 @@ export default function OrdersPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchOrders();
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get('payment');
+    const sessionId = params.get('session_id');
+    const orderId = params.get('order_id');
+
+    if (payment === 'success' && sessionId && orderId) {
+      confirmPayment(sessionId, orderId);
+    } else {
+      fetchOrders();
+    }
   }, []);
+
+  const confirmPayment = async (sessionId, orderId) => {
+    try {
+      const res = await orderApi.confirmStripePayment({ sessionId, orderId });
+      if (res.data.success) {
+        addToast("Payment successful! Your order has been placed.", "success");
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } catch (error) {
+      addToast(error.response?.data?.message || "Failed to confirm payment.", "error");
+    } finally {
+      fetchOrders();
+    }
+  };
 
   const fetchOrders = async () => {
     try {
@@ -147,7 +170,7 @@ export default function OrdersPage() {
                       {/* Right (Price & Link) */}
                       <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4 sm:gap-2">
                         <span className="text-[24px] font-extrabold text-[#191c1d]">
-                          ${order.totalamount?.toFixed(2)}
+                          ₹{order.totalamount?.toFixed(2)}
                         </span>
                         <span className="text-[14px] font-bold text-[#4f46e5] flex items-center gap-1 group-hover:underline">
                           View Details <ArrowRight size={16} />

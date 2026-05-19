@@ -133,11 +133,11 @@ export const getAllProductsAdmin = asyncHandler(async (req, res) => {
 
 export const createProduct = asyncHandler(async (req, res) => {
   try {
-    const { title, description, costprice, sellprice, category, image1 } = req.body;
+    const { title, description, costprice, sellprice, category, image1, gender } = req.body;
     const result = await query(
-      `INSERT INTO products (title, description, costprice, sellprice, category, image1, badge, createdat, updatedat) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *`,
-      [title, description, costprice || 0, sellprice, category, image1, 'New Arrival']
+      `INSERT INTO products (title, description, costprice, sellprice, category, image1, badge, gender, createdat, updatedat) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW()) RETURNING *`,
+      [title, description, costprice || 0, sellprice, category, image1, 'New Arrival', gender || 'unisex']
     );
     res.status(201).json({ success: true, product: result.rows[0] });
   } catch (error) {
@@ -149,11 +149,11 @@ export const createProduct = asyncHandler(async (req, res) => {
 export const updateProduct = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, costprice, sellprice, category, image1 } = req.body;
+    const { title, description, costprice, sellprice, category, image1, gender } = req.body;
     const result = await query(
-      `UPDATE products SET title = $1, description = $2, costprice = $3, sellprice = $4, category = $5, image1 = $6, updatedat = NOW() 
-       WHERE id = $7 RETURNING *`,
-      [title, description, costprice || 0, sellprice, category, image1, id]
+      `UPDATE products SET title = $1, description = $2, costprice = $3, sellprice = $4, category = $5, image1 = $6, gender = $7, updatedat = NOW() 
+       WHERE id = $8 RETURNING *`,
+      [title, description, costprice || 0, sellprice, category, image1, gender || 'unisex', id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, message: "Product not found" });

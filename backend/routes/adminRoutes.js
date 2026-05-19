@@ -1,4 +1,6 @@
 import express from 'express';
+import { v2 as cloudinary } from 'cloudinary';
+import { upload } from '../middleware/multer/multer.js';
 import { 
   adminLogin, 
   getDashboardStats, 
@@ -24,6 +26,30 @@ router.use(userAuth);
 router.use(isAdmin);
 
 router.get('/dashboard', getDashboardStats);
+
+// Image Upload to Cloudinary
+router.post('/upload-image', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+    
+    cloudinary.config({
+        cloud_name: process.env.APP_CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.APP_CLOUDINARY_API_KEY,
+        api_secret: process.env.APP_CLOUDINARY_SECRET_KEY, 
+    });
+
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: 'auto',
+    });
+
+    res.status(200).json({ success: true, url: result.secure_url });
+  } catch (error) {
+    console.error("Cloudinary Upload Error:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to upload image to Cloudinary" });
+  }
+});
 
 // Product Management
 router.get('/products', getAllProductsAdmin);

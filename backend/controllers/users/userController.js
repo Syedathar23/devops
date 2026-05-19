@@ -68,7 +68,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   const verificationToken = await createAccountVerificationToken(newUser.id);
 
   // Send verification email
-  const verificationLink = `http://localhost:3000/verify?token=${verificationToken}`;
+  const verificationLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/verify?token=${verificationToken}`;
 
   const msg = {
     to: newUser.email,
@@ -243,7 +243,7 @@ export const resetpassword = asyncHandler(async (req, res) => {
     // Generate password reset token
     const resetToken = await createPasswordResetToken(user.id); 
     // Send password reset email
-    const resetLink = `http://localhost:3000/resetpassword?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/resetpassword?token=${resetToken}`;
     const msg = {
       to: user.email,
       from: 'syedathar23m@gmail.com',
@@ -306,7 +306,7 @@ export const verifyAccount = asyncHandler(async (req, res) => {
       });
     }
     const verificationToken = await createAccountVerificationToken(user.id);
-    const verificationLink = `http://localhost:3000/verify?token=${verificationToken}`;
+    const verificationLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/verify?token=${verificationToken}`;
     const msg = {
       to: user.email,
       from: `"LUXE Support" <${process.env.EMAIL_USER}>`,
@@ -332,7 +332,7 @@ export const verifyAccountAfterClick = asyncHandler(async (req,res)=>{
   try {
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const result = await query(
-      `SELECT * FROM users WHERE accountverificationtoken = $1 AND accountverificationtokenexpires > NOW()`,
+      `SELECT * FROM users WHERE accountverificationtoken = $1`,
       [hashedToken]
     );
     const user = result.rows[0];
@@ -340,6 +340,13 @@ export const verifyAccountAfterClick = asyncHandler(async (req,res)=>{
       return res.status(400).json({
         success: false, 
         message: "Invalid or expired account verification token.",
+      });
+    }
+    const expiryDate = new Date(user.accountverificationtokenexpires);
+    if (expiryDate < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification token has expired.",
       });
     }
     await query(

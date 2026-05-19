@@ -56,7 +56,9 @@ export const cartApi = {
 export const orderApi = {
   createOrder: (data) => api.post('/orders', data),
   getUserOrders: () => api.get('/orders'),
-  getOrderById: (id) => api.get(`/orders/${id}`)
+  getOrderById: (id) => api.get(`/orders/${id}`),
+  createStripeSession: (data) => api.post('/orders/create-checkout-session', data),
+  confirmStripePayment: (data) => api.post('/orders/confirm-payment', data)
 };
 
 export const addressApi = {

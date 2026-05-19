@@ -5,6 +5,7 @@ import { Lock, Trash2, Plus, Minus, ChevronRight, CreditCard, Truck, Zap, Check,
 import useCartStore from "../store/cartStore";
 import useToastStore from "../store/toastStore";
 import { addressApi, orderApi } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", 
@@ -14,6 +15,7 @@ const INDIAN_STATES = [
 ];
 
 export default function CheckoutPage() {
+  const { user } = useAuth();
   const { 
     items, 
     updateQuantity, 
@@ -45,10 +47,21 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    if (step === 'checkout') {
+    if (step === 'checkout' && !user) {
+      setStep('cart');
+      navigate('/auth', { state: { from: '/checkout' } });
+    } else if (step === 'checkout') {
       fetchAddresses();
     }
-  }, [step]);
+  }, [step, user, navigate]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'cancelled') {
+      addToast("Payment was cancelled. You can try again.", "info");
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [addToast]);
 
   const fetchAddresses = async () => {
     try {
@@ -86,13 +99,18 @@ export default function CheckoutPage() {
   const allSelected = items.length > 0 && items.every(item => item.isSelected);
   const selectedCount = getSelectedCount();
   const subtotal = getSubtotal();
-  const shipping = step === 'checkout' ? (delivery === "express" ? 25 : 0) : 0;
-  const tax = getTax();
-  const total = getTotal(shipping);
+  const shipping = step === 'checkout' ? (delivery === "express" ? 250 : 0) : 0;
+  const tax = subtotal * 0.08;
+  const total = subtotal + tax + shipping;
 
-  const fmt = (v) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(v);
+  const fmt = (v) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 2 }).format(v);
 
   const handleProceedToBuy = () => {
+    if (!user) {
+      addToast("Please sign in first to place an order.", "warning");
+      navigate('/auth', { state: { from: '/checkout' } });
+      return;
+    }
     if (selectedCount === 0) {
       addToast("Please select at least one item to proceed.", "error");
       return;
@@ -118,19 +136,28 @@ export default function CheckoutPage() {
         })),
         totalAmount: total,
         addressId: selectedAddressId,
-        paymentMethod: payment,
-        paymentStatus: 'Paid'
+        paymentMethod: payment === 'card' ? 'Card' : payment,
+        paymentStatus: payment === 'card' ? 'Pending' : 'Paid'
       };
 
-      const res = await orderApi.createOrder(orderData);
-      
-      if (res.data.success) {
-        addToast("Payment successful! Order placed.", "success");
-        clearSelectedItems(); // Remove only purchased items
-        navigate('/orders');
+      if (payment === 'card') {
+        addToast("Redirecting to Stripe secure checkout...", "info");
+        const res = await orderApi.createStripeSession(orderData);
+        if (res.data.success && res.data.url) {
+          window.location.href = res.data.url;
+        } else {
+          throw new Error("Failed to generate Stripe checkout URL");
+        }
+      } else {
+        const res = await orderApi.createOrder(orderData);
+        if (res.data.success) {
+          addToast("Order placed successfully!", "success");
+          clearSelectedItems(); // Remove only purchased items
+          navigate('/orders');
+        }
       }
     } catch (error) {
-      addToast(error.response?.data?.message || "Failed to place order", "error");
+      addToast(error.response?.data?.message || error.message || "Failed to place order", "error");
     }
   };
 
@@ -340,7 +367,7 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { key: "standard", icon: Truck, title: "Standard Shipping", desc: "3–5 business days", price: "Free", priceClass: "text-success" },
-                    { key: "express", icon: Zap, title: "Express Delivery", desc: "1–2 business days", price: "$25.00", priceClass: "text-on-surface" },
+                    { key: "express", icon: Zap, title: "Express Delivery", desc: "1–2 business days", price: "₹250.00", priceClass: "text-on-surface" },
                   ].map((opt) => (
                     <button key={opt.key} type="button" onClick={() => setDelivery(opt.key)}
                       className={`flex items-start gap-4 p-5 rounded-xl border-2 text-left transition-all duration-200 ${delivery === opt.key ? "border-primary bg-primary/5" : "border-outline-variant/30 hover:border-outline-variant"}`}>
@@ -419,7 +446,7 @@ export default function CheckoutPage() {
                     <span className="text-h2 font-extrabold text-primary">{fmt(total)}</span>
                   </div>
                 </div>
-                <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-lg mt-6 transition-all shadow-md hover:-translate-y-0.5">Pay {fmt(total)}</button>
+                 <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-lg mt-6 transition-all shadow-md hover:-translate-y-0.5">PAY</button>
               </div>
             </div>
           </div>

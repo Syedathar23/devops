@@ -16,7 +16,7 @@ function FeaturedCard({ product, index }) {
   const wishlisted = useWishlistStore((s) => s.items.includes(product.id));
   const addToast = useToastStore((s) => s.addToast);
 
-  const fmt = (v) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(v);
+  const fmt = (v) => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(v);
 
   return (
     <motion.div

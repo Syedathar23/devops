@@ -19,7 +19,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   const resetToken = await createPasswordResetToken(user.id);
 
   // Send reset email
-  const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+  const resetLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/reset-password?token=${resetToken}`;
 
   const msg = {
     to: user.email,

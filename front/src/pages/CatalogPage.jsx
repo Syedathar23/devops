@@ -4,7 +4,7 @@ import ProductCard from "../components/ProductCard";
 import { categories as staticCategories, colorFilters } from "../data/products";
 import useFilterStore from "../store/filterStore";
 import { productApi } from "../services/api";
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function CatalogPage() {
@@ -29,6 +29,7 @@ export default function CatalogPage() {
 
   const [dbProducts, setDbProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedGender, setSelectedGender] = useState(null);
   const location = useLocation();
 
   // Sync URL params with store
@@ -36,6 +37,7 @@ export default function CatalogPage() {
     const params = new URLSearchParams(location.search);
     const cat = params.get('category');
     const badge = params.get('badge');
+    const gen = params.get('gender');
     
     if (cat) {
       setStoreCategories([cat]);
@@ -47,6 +49,12 @@ export default function CatalogPage() {
       setSelectedBadge(badge);
     } else {
       setSelectedBadge(null);
+    }
+
+    if (gen) {
+      setSelectedGender(gen);
+    } else {
+      setSelectedGender(null);
     }
   }, [location.search]);
 
@@ -85,10 +93,28 @@ export default function CatalogPage() {
       result = result.filter((p) => selectedCategories.includes(p.category));
     }
 
+    // Gender filter
+    if (selectedGender) {
+      const genLower = selectedGender.toLowerCase();
+      result = result.filter((p) => {
+        if (!p.gender) return false;
+        const pGenLower = p.gender.toLowerCase();
+        return pGenLower === genLower || pGenLower === 'unisex';
+      });
+    }
+
     // Badge filter
     const selectedBadge = useFilterStore.getState().selectedBadge;
     if (selectedBadge) {
-      result = result.filter((p) => p.badge === selectedBadge);
+      const badgeLower = selectedBadge.toLowerCase();
+      result = result.filter((p) => {
+        if (!p.badge) return false;
+        const pBadgeLower = p.badge.toLowerCase();
+        return pBadgeLower.includes(badgeLower) || 
+               badgeLower.includes(pBadgeLower) ||
+               (badgeLower === 'new arrival' && pBadgeLower === 'new') ||
+               (badgeLower === 'new' && pBadgeLower === 'new arrival');
+      });
     }
 
     // Price filter
@@ -131,11 +157,11 @@ export default function CatalogPage() {
   );
 
   const formatPrice = (val) =>
-    val >= 500
-      ? "$500+"
-      : new Intl.NumberFormat("en-US", {
+    val >= 50000
+      ? "₹50,000+"
+      : new Intl.NumberFormat("en-IN", {
           style: "currency",
-          currency: "USD",
+          currency: "INR",
           minimumFractionDigits: 0,
         }).format(val);
 
@@ -212,8 +238,8 @@ export default function CatalogPage() {
                 <input
                   type="range"
                   min={0}
-                  max={500}
-                  step={10}
+                  max={50000}
+                  step={100}
                   value={priceRange[1]}
                   onChange={(e) =>
                     setPriceRange([priceRange[0], Number(e.target.value)])
@@ -223,28 +249,6 @@ export default function CatalogPage() {
                 />
               </div>
 
-              {/* Color Filter */}
-              <div className="mb-6">
-                <h3 className="text-label-caps text-on-surface-variant mb-3 uppercase">
-                  Color
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {colorFilters.map((color) => (
-                    <button
-                      key={color.name}
-                      onClick={() => toggleColor(color.name)}
-                      className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                        selectedColors.includes(color.name)
-                          ? "border-primary ring-2 ring-primary/30 scale-110"
-                          : "border-outline-variant/40 hover:border-outline"
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      aria-label={`Filter by ${color.name}`}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-              </div>
 
               {/* Clear Filters */}
               <button

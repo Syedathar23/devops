@@ -16,8 +16,38 @@ export default function ProductManagement() {
     sellprice: '',
     category: 'Supplements',
     image1: '',
+    gender: 'unisex',
     stock: 0,
   });
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const data = new FormData();
+    data.append('image', file);
+
+    setUploadingImage(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await axios.post(`${API_BASE_URL}/admin/upload-image`, data, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}` 
+        }
+      });
+      if (response.data.success) {
+        setFormData(prev => ({ ...prev, image1: response.data.url }));
+      }
+    } catch (err) {
+      alert('Failed to upload image to Cloudinary');
+      console.error(err);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -77,7 +107,7 @@ export default function ProductManagement() {
       }
       setIsModalOpen(false);
       setEditingId(null);
-      setFormData({ title: '', description: '', costprice: '', sellprice: '', category: 'Supplements', image1: '', stock: 0 });
+      setFormData({ title: '', description: '', costprice: '', sellprice: '', category: 'Supplements', image1: '', gender: 'unisex', stock: 0 });
     } catch (err) {
       alert('Failed to save product');
       console.error(err);
@@ -92,6 +122,7 @@ export default function ProductManagement() {
       sellprice: product.sellprice,
       category: product.category,
       image1: product.image1,
+      gender: product.gender || 'unisex',
       stock: product.stock || 0,
     });
     setEditingId(product.id);
@@ -128,7 +159,7 @@ export default function ProductManagement() {
         <h1 className="text-h2 font-bold text-on-surface">Product Management</h1>
         <button 
           onClick={() => {
-            setFormData({ title: '', description: '', costprice: '', sellprice: '', category: 'Supplements', image1: '', stock: 0 });
+            setFormData({ title: '', description: '', costprice: '', sellprice: '', category: 'Supplements', image1: '', gender: 'unisex', stock: 0 });
             setEditingId(null);
             setIsModalOpen(true);
           }}
@@ -206,17 +237,63 @@ export default function ProductManagement() {
                 >
                   <option>Supplements</option>
                   <option>Equipment</option>
-                  <option>Accessories</option>
                   <option>Apparel</option>
+                  <option>Footwear</option>
+                  <option>Accessories</option>
+                  <option>Massagers</option>
+                  <option>Cycles</option>
                 </select>
               </div>
               <div>
-                <label className="block text-label-caps text-on-surface-variant mb-1.5 uppercase">Image URL</label>
-                <input 
-                  type="text" required
-                  value={formData.image1} onChange={(e) => setFormData({...formData, image1: e.target.value})}
-                  className="w-full border border-outline-variant/40 rounded-lg px-4 py-2"
-                />
+                <label className="block text-label-caps text-on-surface-variant mb-1.5 uppercase">Gender Focus</label>
+                <select 
+                  value={formData.gender} onChange={(e) => setFormData({...formData, gender: e.target.value})}
+                  className="w-full border border-outline-variant/40 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="unisex">Unisex</option>
+                  <option value="men">Men</option>
+                  <option value="women">Women</option>
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-label-caps text-on-surface-variant mb-1.5 uppercase">Product Image</label>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 bg-surface-dim p-4 rounded-lg border border-outline-variant/30">
+                  {formData.image1 && (
+                    <div className="w-16 h-16 rounded-lg bg-white overflow-hidden border border-outline-variant/20 flex-shrink-0">
+                      <img src={formData.image1} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <label className="bg-primary hover:bg-primary-dark text-white text-body-sm font-semibold py-2 px-4 rounded-lg cursor-pointer transition-colors inline-flex items-center gap-2">
+                        {uploadingImage ? (
+                          <>
+                            <Loader2 className="animate-spin animate-spin-fast" size={16} />
+                            Uploading to Cloudinary...
+                          </>
+                        ) : (
+                          <>
+                            Upload Image File
+                          </>
+                        )}
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          disabled={uploadingImage}
+                          onChange={handleImageUpload}
+                          className="hidden" 
+                        />
+                      </label>
+                      <span className="text-[12px] text-on-surface-variant">or paste URL below</span>
+                    </div>
+                    <input 
+                      type="text" required
+                      placeholder="https://example.com/image.jpg"
+                      value={formData.image1} onChange={(e) => setFormData({...formData, image1: e.target.value})}
+                      className="w-full border border-outline-variant/40 rounded-lg px-4 py-2 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  </div>
+                </div>
               </div>
               <div className="md:col-span-2 flex gap-4 mt-4">
                 <button 
@@ -254,7 +331,11 @@ export default function ProductManagement() {
               <option>All Categories</option>
               <option>Supplements</option>
               <option>Equipment</option>
+              <option>Apparel</option>
+              <option>Footwear</option>
               <option>Accessories</option>
+              <option>Massagers</option>
+              <option>Cycles</option>
             </select>
           </div>
         </div>

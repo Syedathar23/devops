@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: ${{ github.sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Node for backend
+      - name: Set up Node.js (backend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './backend/package-lock.json'
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm test
+
+      # Set up Node for frontend
+      - name: Set up Node.js (frontend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './front/package-lock.json'
+
+      - name: Install frontend dependencies
+        working-directory: ./front
+        run: npm ci
+
+      - name: Build frontend assets
+        working-directory: ./front
+        run: npm run build
+
+      # Docker build and push backend image
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build backend Docker image
+        working-directory: ./backend
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ecom-backend:${IMAGE_TAG} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/ecom-backend:${IMAGE_TAG}
+
+      # Docker build and push frontend image
+      - name: Build frontend Docker image
+        working-directory: ./front
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ecom-frontend:${IMAGE_TAG} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/ecom-frontend:${IMAGE_TAG}
+
+      # Optional deployment step (trigger existing deploy workflow)
+      - name: Trigger deployment (optional)
+        if: github.ref == 'refs/heads/main'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+            await octokit.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'deploy.yml',
+              ref: 'main'
+            });

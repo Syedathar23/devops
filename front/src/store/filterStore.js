@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const useFilterStore = create((set) => ({
   selectedCategories: [],
-  priceRange: [0, 500],
+  priceRange: [0, 50000],
   selectedColors: [],
   sortBy: "newest",
   viewMode: "grid",
@@ -44,7 +44,7 @@ const useFilterStore = create((set) => ({
   clearFilters: () =>
     set({
       selectedCategories: [],
-      priceRange: [0, 500],
+      priceRange: [0, 50000],
       selectedColors: [],
       sortBy: "newest",
       currentPage: 1,

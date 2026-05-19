@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,10 +15,13 @@ import useCartStore from "../store/cartStore";
 import useWishlistStore from "../store/wishlistStore";
 import useToastStore from "../store/toastStore";
 import ProductCard from "../components/ProductCard";
+import { productApi } from "../services/api";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
-  const product = products.find((p) => p.id === Number(id));
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
   const addItem = useCartStore((s) => s.addItem);
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const wishlisted = useWishlistStore((s) => s.items.includes(Number(id)));
@@ -26,10 +29,73 @@ export default function ProductDetailPage() {
 
   const [mainImage, setMainImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(
-    product?.sizes?.length > 0 ? 1 : null
-  );
+  const [selectedSize, setSelectedSize] = useState(null);
   const [openAccordion, setOpenAccordion] = useState(null);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const res = await productApi.getById(id);
+        if (res.data) {
+          const dbProduct = res.data;
+          
+          // Map DB product fields to expected front UI fields
+          const mappedProduct = {
+            id: dbProduct.id,
+            name: dbProduct.title,
+            description: dbProduct.description,
+            price: parseFloat(dbProduct.sellprice),
+            category: dbProduct.category,
+            badge: dbProduct.badge || null,
+            rating: 4.5,
+            reviewCount: 150,
+            colors: dbProduct.colors || [
+              { name: "Default Black", value: "#1F2937" }
+            ],
+            sizes: dbProduct.sizes || [],
+            images: [
+              dbProduct.image1,
+              dbProduct.image2,
+              dbProduct.image3,
+              dbProduct.image4,
+              dbProduct.image5,
+              dbProduct.image6,
+              dbProduct.image7,
+              dbProduct.image8
+            ].filter(Boolean)
+          };
+          
+          if (mappedProduct.images.length === 0) {
+            mappedProduct.images = ["/images/product-placeholder.webp"];
+          }
+          
+          setProduct(mappedProduct);
+          if (mappedProduct.sizes.length > 0) {
+            setSelectedSize(0);
+          }
+        } else {
+          // Fallback to static mock products
+          const staticProd = products.find((p) => p.id === Number(id));
+          setProduct(staticProd || null);
+          if (staticProd?.sizes?.length > 0) {
+            setSelectedSize(0);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch product from DB:", err);
+        const staticProd = products.find((p) => p.id === Number(id));
+        setProduct(staticProd || null);
+        if (staticProd?.sizes?.length > 0) {
+          setSelectedSize(0);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
 
   const productReviews = useMemo(
     () => reviews.filter((r) => r.productId === Number(id)),
@@ -40,6 +106,14 @@ export default function ProductDetailPage() {
     () => products.filter((p) => p.id !== Number(id)).slice(0, 4),
     [id]
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -55,9 +129,9 @@ export default function ProductDetailPage() {
   }
 
   const formatPrice = (price) =>
-    new Intl.NumberFormat("en-US", {
+    new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
     }).format(price);
 
@@ -214,27 +288,6 @@ export default function ProductDetailPage() {
               functionality.
             </p>
 
-            {/* Color Selection */}
-            <div className="mt-8">
-              <p className="text-label-caps text-on-surface-variant mb-3 uppercase">
-                Color: {product.colors[selectedColor]?.name}
-              </p>
-              <div className="flex items-center gap-3">
-                {product.colors.map((color, i) => (
-                  <button
-                    key={color.name}
-                    onClick={() => setSelectedColor(i)}
-                    className={`w-10 h-10 rounded-full border-2 transition-all duration-200 ${
-                      selectedColor === i
-                        ? "border-primary ring-2 ring-primary/30 scale-110"
-                        : "border-outline-variant/40 hover:border-outline"
-                    }`}
-                    style={{ backgroundColor: color.value }}
-                    aria-label={`Select ${color.name}`}
-                  />
-                ))}
-              </div>
-            </div>
 
             {/* Size Selection */}
             {product.sizes.length > 0 && (

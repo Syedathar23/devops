@@ -22,9 +22,9 @@ export default function ProductCard({ product }) {
   };
 
   const formatPrice = (price) =>
-    new Intl.NumberFormat("en-US", {
+    new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 0,
     }).format(price);
 

@@ -13,70 +13,39 @@ const navStructure = [
   },
   {
     label: "Men",
-    path: "/shop?category=men",
-    dropdown: [
-      { title: "Protein & Supplements", items: ["Whey Protein", "Mass Gainers", "Pre-Workout", "BCAAs"] },
-      { title: "Gym Wear", items: ["T-Shirts", "Shorts", "Track Pants", "Compression Wear"] },
-      { title: "Footwear", items: ["Training Shoes", "Running Shoes", "Lifting Shoes"] }
-    ]
+    path: "/shop?gender=men",
   },
   {
     label: "Women",
-    path: "/shop?category=women",
-    dropdown: [
-      { title: "Protein & Supplements", items: ["Women's Whey", "Collagen", "Vitamins"] },
-      { title: "Activewear", items: ["Sports Bras", "Leggings", "Tank Tops", "Hoodies"] },
-      { title: "Footwear", items: ["Training Shoes", "Running Shoes", "Yoga Shoes"] }
-    ]
+    path: "/shop?gender=women",
   },
   {
     label: "Apparel",
-    path: "/shop?category=apparel",
-    dropdown: [
-      { title: "Clothing", items: ["Hoodies & Jackets", "T-Shirts & Tanks", "Shorts & Pants", "Compression Wear", "Joggers", "Tracksuits"] }
-    ]
+    path: "/shop?category=Apparel",
   },
   {
     label: "Footwear",
-    path: "/shop?category=footwear",
-    dropdown: [
-      { title: "Shoes", items: ["Training Shoes", "Running Shoes", "Lifting Shoes", "Casual Sneakers", "Yoga/Pilates Shoes"] }
-    ]
+    path: "/shop?category=Footwear",
   },
   {
     label: "Gym Equipment",
-    path: "/shop?category=equipment",
-    dropdown: [
-      { title: "Weights & Machines", items: ["Dumbbells & Weights", "Resistance Bands", "Yoga Mats", "Benches & Racks", "Kettlebells", "Pull-up Bars", "Home Gym Sets"] }
-    ]
+    path: "/shop?category=Equipment",
   },
   {
     label: "Massagers",
-    path: "/shop?category=massagers",
-    dropdown: [
-      { title: "Recovery Tools", items: ["Massage Guns", "Foam Rollers", "Trigger Point Balls", "Recovery Boots", "Massage Rollers"] }
-    ]
+    path: "/shop?category=Massagers",
   },
   {
     label: "Accessories",
-    path: "/shop?category=accessories",
-    dropdown: [
-      { title: "Gear", items: ["Gym Bags", "Water Bottles", "Shakers", "Lifting Straps", "Weight Belts", "Gloves", "Headbands", "Towels"] }
-    ]
+    path: "/shop?category=Accessories",
   },
   {
     label: "Cycles",
-    path: "/shop?category=cycles",
-    dropdown: [
-      { title: "Cardio", items: ["Stationary Bikes", "Spin Bikes", "Air Bikes", "Recumbent Bikes", "Bike Accessories"] }
-    ]
+    path: "/shop?category=Cycles",
   },
   {
     label: "Shop by Activity",
     path: "/shop",
-    dropdown: [
-      { title: "Activities", items: ["Weightlifting", "Yoga", "Running", "CrossFit", "Home Workout", "Cycling", "Cardio", "Stretching & Recovery"] }
-    ]
   }
 ];
 
