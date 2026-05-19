@@ -30,7 +30,7 @@ services:
         - VITE_API_URL=/api
     container_name: ecom-frontend
     ports:
-      - "5173:80"
+      - "80:80"
     volumes:
       - ./front:/app
       - /app/node_modules
