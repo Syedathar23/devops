@@ -14,7 +14,7 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    gender: 'Prefer not to say',
+    gender: 'Prefer not to say !',
     birthday: '',
     email: '',
     phone: '',
