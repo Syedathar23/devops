@@ -38,7 +38,7 @@ export default function CatalogPage() {
     const cat = params.get('category');
     const badge = params.get('badge');
     const gen = params.get('gender');
-    
+
     if (cat) {
       setStoreCategories([cat]);
     } else {
@@ -110,10 +110,10 @@ export default function CatalogPage() {
       result = result.filter((p) => {
         if (!p.badge) return false;
         const pBadgeLower = p.badge.toLowerCase();
-        return pBadgeLower.includes(badgeLower) || 
-               badgeLower.includes(pBadgeLower) ||
-               (badgeLower === 'new arrival' && pBadgeLower === 'new') ||
-               (badgeLower === 'new' && pBadgeLower === 'new arrival');
+        return pBadgeLower.includes(badgeLower) ||
+          badgeLower.includes(pBadgeLower) ||
+          (badgeLower === 'new arrival' && pBadgeLower === 'new') ||
+          (badgeLower === 'new' && pBadgeLower === 'new arrival');
       });
     }
 
@@ -160,10 +160,10 @@ export default function CatalogPage() {
     val >= 50000
       ? "₹50,000+"
       : new Intl.NumberFormat("en-IN", {
-          style: "currency",
-          currency: "INR",
-          minimumFractionDigits: 0,
-        }).format(val);
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 0,
+      }).format(val);
 
   return (
     <div className="min-h-screen">
@@ -253,7 +253,7 @@ export default function CatalogPage() {
               {/* Clear Filters */}
               <button
                 onClick={clearFilters}
-                className="w-full bg-surface-container text-on-surface-variant text-body-sm font-medium py-2.5 rounded-lg hover:bg-outline-variant/30 transition-colors"
+                className="w-full bg-surface-container text-on-surface-variant text-body-sm font-medium py-2.5 rounded-lg hover:bg-outline-variant/30 transition-colors hover:bg-color[#]"
               >
                 Clear Filters
               </button>
@@ -294,22 +294,20 @@ export default function CatalogPage() {
                 <div className="flex items-center bg-surface-container rounded-lg p-1">
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-1.5 rounded-md transition-colors ${
-                      viewMode === "grid"
+                    className={`p-1.5 rounded-md transition-colors ${viewMode === "grid"
                         ? "bg-white shadow-soft text-primary"
                         : "text-outline hover:text-on-surface"
-                    }`}
+                      }`}
                     aria-label="Grid view"
                   >
                     <Grid3X3 size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-1.5 rounded-md transition-colors ${
-                      viewMode === "list"
+                    className={`p-1.5 rounded-md transition-colors ${viewMode === "list"
                         ? "bg-white shadow-soft text-primary"
                         : "text-outline hover:text-on-surface"
-                    }`}
+                      }`}
                     aria-label="List view"
                   >
                     <List size={16} />
@@ -373,11 +371,10 @@ export default function CatalogPage() {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`w-10 h-10 rounded-lg text-body-sm font-medium transition-colors ${
-                        currentPage === page
+                      className={`w-10 h-10 rounded-lg text-body-sm font-medium transition-colors ${currentPage === page
                           ? "bg-primary text-white"
                           : "text-on-surface-variant hover:bg-surface-container"
-                      }`}
+                        }`}
                       aria-label={`Page ${page}`}
                       aria-current={currentPage === page ? "page" : undefined}
                     >

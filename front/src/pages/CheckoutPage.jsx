@@ -107,7 +107,7 @@ export default function CheckoutPage() {
 
   const handleProceedToBuy = () => {
     if (!user) {
-      addToast("Please sign in first to place an order.", "warning");
+      addToast("In order to place an order you need to sign in", "warning");
       navigate('/auth', { state: { from: '/checkout' } });
       return;
     }

@@ -6,7 +6,7 @@ import { uploadMultipleCouldinary } from "../../middleware/upload/uploadMultiple
 const route = express.Router();
 
 route.post("/createproduct",userAuth,upload.array("images"),uploadMultipleCouldinary,createProduct);
-route.get("/fetchallproducts",userAuth,fetchAllProducts);
+route.get("/fetchallproducts",fetchAllProducts);
 route.get("/fetchfreeproducts",fetchFreeproducts);
 route.get("/fetchPaidProd", fetchPaidProd);
 route.get("/fetchGoogleProd", fetchGoogleProd);

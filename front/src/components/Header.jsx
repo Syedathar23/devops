@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthContext";
 const navStructure = [
   {
     label: "New Arrivals",
-    path: "/shop?badge=New Arrival",
+    path: "/shop",
   },
   {
     label: "Men",
