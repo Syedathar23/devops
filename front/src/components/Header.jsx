@@ -32,10 +32,6 @@ const navStructure = [
     path: "/shop?category=Equipment",
   },
   {
-    label: "Massagers",
-    path: "/shop?category=Massagers",
-  },
-  {
     label: "Accessories",
     path: "/shop?category=Accessories",
   },
