@@ -285,7 +285,7 @@ export default function HomePage() {
             Ready to Transform Your Training?
           </motion.h2>
           <motion.p {...fadeUp} viewport={{ once: true }} transition={{ delay: 0.1 }} className="text-body-lg text-white/80 mt-4 max-w-xl mx-auto">
-            Join thousands of athletes who trust JERAI for their fitness journey. Sign up today and get 15% off your first order.
+            Join thousands of athletes who trust CoreX Gear for their fitness journey. Sign up today and get 15% off your first order.
           </motion.p>
           <motion.div {...fadeUp} viewport={{ once: true }} transition={{ delay: 0.2 }}>
             <Link to="/auth" className="inline-flex items-center gap-2 bg-white text-primary font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors mt-8 text-body-md">

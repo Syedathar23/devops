@@ -63,7 +63,7 @@ export default function Footer() {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (email) {
-      addToast("Subscribed successfully! Welcome to the JERAI community.", "success");
+      addToast("Subscribed successfully! Welcome to the CoreX Gear community.", "success");
       setEmail("");
     }
   };
@@ -75,7 +75,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link to="/" className="text-h1 font-extrabold tracking-tight text-white select-none">
-              JERAI
+              CoreX Gear
             </Link>
             <p className="text-body-sm text-gray-400 mt-4 max-w-sm leading-relaxed">
               Premium gym essentials for every athlete. From supplements to equipment, we provide everything you need to push beyond limits.
@@ -133,7 +133,7 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-body-sm text-gray-500">
-              &copy; {currentYear} JERAI Fitness. All rights reserved.
+              &copy; {currentYear} CoreX Gear Fitness. All rights reserved.
             </p>
             {/* Payment Icons */}
             <div className="flex items-center gap-3">
