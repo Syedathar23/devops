@@ -37,7 +37,7 @@ export default function AdminLogin() {
       <div className="lg:w-[40%] relative hidden lg:flex flex-col justify-center px-12 xl:px-16 overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url("/images/gym-bag.webp")' }}
+          style={{ backgroundImage: 'url("https://i.pinimg.com/736x/f3/ea/42/f3ea42aa4b9312921676d9f462959f1f.jpg")' }}
         />
         <div className="absolute inset-0 bg-black/40 bg-gradient-to-t from-black/80 to-transparent" />
         
