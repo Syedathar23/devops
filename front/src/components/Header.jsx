@@ -61,7 +61,7 @@ export default function Header() {
       <div className="max-w-[1600px] mx-auto px-6 flex items-center justify-between h-16 lg:h-[72px]">
         {/* Logo */}
         <Link to="/" className="text-h2 font-extrabold tracking-tight text-on-surface select-none flex-shrink-0" aria-label="Home">
-          JERNI
+          CoreX Gear
         </Link>
 
         {/* Desktop Nav - with Hover Dropdowns */}
