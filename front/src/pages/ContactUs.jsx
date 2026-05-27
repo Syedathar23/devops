@@ -37,7 +37,7 @@ export default function ContactUs() {
                 <MapPin size={24} />
               </div>
               <h3 className="text-h3 font-bold text-on-surface mb-2">Address</h3>
-              <p className="text-body-md text-on-surface-variant">123 Fitness Street,<br/>Mumbai, India 400001</p>
+              <p className="text-body-md text-on-surface-variant">123 Fitness Street,<br/>Hyderabad, Telangana 500001</p>
             </div>
             
             <div className="bg-white p-8 rounded-xl shadow-sm border border-outline-variant/20 flex flex-col items-center text-center">
@@ -45,7 +45,7 @@ export default function ContactUs() {
                 <Mail size={24} />
               </div>
               <h3 className="text-h3 font-bold text-on-surface mb-2">Email</h3>
-              <p className="text-body-md text-on-surface-variant">support@fitstore.com</p>
+              <p className="text-body-md text-on-surface-variant">support@coreXgear.com</p>
             </div>
 
             <div className="bg-white p-8 rounded-xl shadow-sm border border-outline-variant/20 flex flex-col items-center text-center">
