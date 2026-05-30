@@ -306,7 +306,7 @@ export const verifyAccount = asyncHandler(async (req, res) => {
       });
     }
     const verificationToken = await createAccountVerificationToken(user.id);
-    const verificationLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/verify?token=${verificationToken}`;
+    const verificationLink = `${process.env.FRONTEND_URL || "http://localhost:"}/verify?token=${verificationToken}`;
     const msg = {
       to: user.email,
       from: `"LUXE Support" <${process.env.EMAIL_USER}>`,
